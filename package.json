@@ -1,0 +1,27 @@
+{
+  "name": "voicerecorder",
+  "version": "1.0.0",
+  "description": "a web based voice recorder",
+  "main": "dist/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UnJavaScripter/voice-recoder.git"
+  },
+  "keywords": [
+    "voice recorder",
+    "voice",
+    "recorder"
+  ],
+  "author": "unJavaScripter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/UnJavaScripter/voice-recoder/issues"
+  },
+  "homepage": "https://github.com/UnJavaScripter/voice-recoder#readme",
+  "devDependencies": {
+    "@types/dom-mediacapture-record": "^1.0.3"
+  }
+}

@@ -1,0 +1,34 @@
+body {
+  background-color: #923535;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.indicator {
+  background: cadetblue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: grey;
+}
+
+.preview-container {
+  display: none;
+}

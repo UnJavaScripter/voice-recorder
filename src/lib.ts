@@ -2,18 +2,13 @@ class MediaLib {
   fileHandle: any;
   recorder: any;
 
-  private getFileHandle() {
-    const handle = (window as any).chooseFileSystemEntries();
-    return handle;
-  }
-
   private getNewFileHandle() {
     const opts = {
       type: 'saveFile',
       accepts: [{
-        description: 'Audio file',
-        extensions: ['mp3'],
-        mimeTypes: ['audio/mpeg'],
+        description: 'Video file',
+        extensions: ['mp4'],
+        mimeTypes: ['video/mp4'],
       }],
     };
     const handle = (window as any).chooseFileSystemEntries(opts);
@@ -24,17 +19,14 @@ class MediaLib {
     let data: BlobPart[] = [];
     this.recorder = recorder;
 
-    if(!this.fileHandle) {
-      this.fileHandle = await this.getNewFileHandle();
-    }else {
-      this.fileHandle = await this.getFileHandle();
-    }
-    console.log(this.fileHandle.size)
-    debugger
+    this.fileHandle = await this.getNewFileHandle();
     
+    console.log(this.fileHandle.size)
+
+
     this.recorder.ondataavailable = (event: any) => {
       console.log('ondataavailable', event.data)
-      if(data.length >= maxBufferSize) {
+      if (data.length >= maxBufferSize) {
         data.length = 0;
       }
       data.push(event.data)
@@ -43,6 +35,15 @@ class MediaLib {
     };
     this.recorder.start(storeEachMillis);
     console.log(this.recorder.state);
+  }
+
+  private async writeFile(fileHandle: any, contents: any) {
+    const writer = await fileHandle.createWriter({ keepExistingData: true });
+    console.log(contents)
+    await writer.write(0, contents);
+    console.log('will write', contents)
+
+    await writer.close();
 
     let stopped = new Promise((resolve, reject) => {
       this.recorder.onstop = resolve;
@@ -53,18 +54,10 @@ class MediaLib {
       stopped,
     ])
       .then(() => {
-        console.log('recorded!!', data)
-        return data
+        console.log('%c==============================================', 'color: darkslategray; background-color: yellow')
+        console.log('recorded!!', contents)
+        return contents
       });
-  }
-
-  private async writeFile(fileHandle: any, contents: any) {
-    const writer = await fileHandle.createWriter({keepExistingData: true});
-    console.log(contents)
-    await writer.write(0, contents);
-    console.log('will write', contents)
-
-    await writer.close();
   }
 
   stop() {

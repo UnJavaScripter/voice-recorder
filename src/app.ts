@@ -12,16 +12,20 @@ class FSHelpers {
   pauseButton: HTMLMediaElement | any;
   resumeButton: HTMLMediaElement | any;
   preview: HTMLMediaElement | any;
+  timerElem: HTMLMediaElement | any;
   userMedia: any;
   recording: any;
+  timer: any;
 
   maxBufferSize: number = 100;
   storeEachMillis: number = 1000;
 
   constructor() {
     this.recording = {
-      status: RecordingStatus.READY
+      status: RecordingStatus.READY,
+      currentTime: 0
     }
+    this.timerElem = document.getElementById('timer') as HTMLElement;
     this.startButton = document.getElementById('start-btn') as HTMLElement;
     this.stopButton = document.getElementById("stop-btn") as HTMLElement;
 
@@ -38,9 +42,15 @@ class FSHelpers {
       return stream;
     })
 
-    this.startButton.addEventListener('click', () => {
+    this.startButton.addEventListener('click', async () =>  {
       if (this.recording.status === RecordingStatus.READY) {
-        this.start();
+        this.start().then(() => {
+          this.startTimer();
+          this.recording.status = RecordingStatus.RECORDING;
+        });
+      } else if(this.recording.status === RecordingStatus.PAUSED) {
+        mediaLib.resume();
+        this.startTimer();
         this.recording.status = RecordingStatus.RECORDING;
       }
     });
@@ -48,6 +58,12 @@ class FSHelpers {
     this.stopButton.addEventListener('click', () => {
       if (this.recording.status === RecordingStatus.RECORDING) {
         mediaLib.stop();
+        this.resetTimer();
+        this.recording.status = RecordingStatus.READY;
+      } else if (this.recording.status === RecordingStatus.PAUSED) {
+        mediaLib.resume();
+        mediaLib.stop();
+        this.resetTimer();
         this.recording.status = RecordingStatus.READY;
       }
     });
@@ -55,25 +71,49 @@ class FSHelpers {
     this.pauseButton.addEventListener('click', () => {
       if (this.recording.status === RecordingStatus.PAUSED) {
         mediaLib.resume();
+        this.startTimer();
         this.recording.status = RecordingStatus.RECORDING;
-      } else {
+      } else if(this.recording.status === RecordingStatus.RECORDING) {
         mediaLib.pause();
+        this.stopTimer();
         this.recording.status = RecordingStatus.PAUSED;
       }
     });
+   
+  }
+
+  private async start() {
+    const streamSource = await this.userMedia;
+    const recorder = new MediaRecorder(streamSource);
+    this.preview.captureStream(recorder);
+    return await mediaLib.startRecording(
+      recorder,
+      this.maxBufferSize,
+      this.storeEachMillis
+    )
     
   }
 
-  private start() {
-    this.userMedia.then((stream: any) => {
-      const recorder = new MediaRecorder(stream)
-      this.preview.captureStream(recorder);
-      mediaLib.startRecording(
-        recorder,
-        this.maxBufferSize,
-        this.storeEachMillis
-      )
-    })
+  tick() {
+    this.recording.currentTime += 1;
+    this.timerElem.innerText = this.recording.currentTime;
+  }
+
+  startTimer() {
+    this.timer = setInterval(() => {
+      console.log('tick', this.recording.currentTime)
+      this.tick();
+    }, 1000);
+  }
+
+  stopTimer() {
+    clearInterval(this.timer);
+  }
+
+  resetTimer() {
+    this.recording.currentTime = 0;
+    this.timerElem.innerText = 0;
+    this.stopTimer();
   }
 
 

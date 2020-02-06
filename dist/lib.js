@@ -1,16 +1,12 @@
 "use strict";
 class MediaLib {
-    getFileHandle() {
-        const handle = window.chooseFileSystemEntries();
-        return handle;
-    }
     getNewFileHandle() {
         const opts = {
             type: 'saveFile',
             accepts: [{
-                    description: 'Audio file',
-                    extensions: ['mp3'],
-                    mimeTypes: ['audio/mpeg'],
+                    description: 'Video file',
+                    extensions: ['mp4'],
+                    mimeTypes: ['video/mp4'],
                 }],
         };
         const handle = window.chooseFileSystemEntries(opts);
@@ -19,14 +15,8 @@ class MediaLib {
     async startRecording(recorder, maxBufferSize = 100, storeEachMillis = 1000) {
         let data = [];
         this.recorder = recorder;
-        if (!this.fileHandle) {
-            this.fileHandle = await this.getNewFileHandle();
-        }
-        else {
-            this.fileHandle = await this.getFileHandle();
-        }
+        this.fileHandle = await this.getNewFileHandle();
         console.log(this.fileHandle.size);
-        debugger;
         this.recorder.ondataavailable = (event) => {
             console.log('ondataavailable', event.data);
             if (data.length >= maxBufferSize) {
@@ -38,6 +28,13 @@ class MediaLib {
         };
         this.recorder.start(storeEachMillis);
         console.log(this.recorder.state);
+    }
+    async writeFile(fileHandle, contents) {
+        const writer = await fileHandle.createWriter({ keepExistingData: true });
+        console.log(contents);
+        await writer.write(0, contents);
+        console.log('will write', contents);
+        await writer.close();
         let stopped = new Promise((resolve, reject) => {
             this.recorder.onstop = resolve;
             this.recorder.onerror = (event) => reject(event); //event.name
@@ -46,16 +43,10 @@ class MediaLib {
             stopped,
         ])
             .then(() => {
-            console.log('recorded!!', data);
-            return data;
+            console.log('%c==============================================', 'color: darkslategray; background-color: yellow');
+            console.log('recorded!!', contents);
+            return contents;
         });
-    }
-    async writeFile(fileHandle, contents) {
-        const writer = await fileHandle.createWriter({ keepExistingData: true });
-        console.log(contents);
-        await writer.write(0, contents);
-        console.log('will write', contents);
-        await writer.close();
     }
     stop() {
         this.recorder.stop();

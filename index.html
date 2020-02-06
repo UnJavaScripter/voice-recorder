@@ -6,33 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Voice Recorder</title>
-  <style>
-    .preview-container {
-      display: flex;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <section>
-    <div>
-      <button id="start-btn">Start</button>
-      <button id="stop-btn">Stopp</button>
-    </div>
-    
-    <br>
+  <main>
+    <section class="indicator">
+      <div class="time-counter">
+        <span id="timer"></span>
+      </div>
+    </section>
 
-    <div>
-      <button id="pause-btn">Pause/Resume</button>
-    </div>
-  </section>
+    <section class="controls">
+      <div>
+        <button id="start-btn">Start</button>
+        <button id="stop-btn">Stopp</button>
+      </div>
 
-  <section>
+
+      <div>
+        <button id="pause-btn">Pause/Resume</button>
+      </div>
+    </section>
+
+  </main>
     <div class="preview-container">
       <video id="preview" width="3840" height="2160" style="z-index: 0;" autoplay muted></video>
     </div>
-  </section>
-
   <script src="dist/lib.js"></script>
   <script src="dist/app.js"></script>
 </body>

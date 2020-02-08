@@ -14,6 +14,7 @@ class FSHelpers {
             status: RecordingStatus.READY,
             currentTime: 0
         };
+        this.timerDate = new Date(0);
         this.timerElem = document.getElementById('timer');
         this.startButton = document.getElementById('start-btn');
         this.stopButton = document.getElementById("stop-btn");
@@ -30,13 +31,13 @@ class FSHelpers {
         this.startButton.addEventListener('click', async () => {
             if (this.recording.status === RecordingStatus.READY) {
                 this.start().then(() => {
-                    this.startTimer();
+                    this.startTimerInterval();
                     this.recording.status = RecordingStatus.RECORDING;
                 });
             }
             else if (this.recording.status === RecordingStatus.PAUSED) {
                 mediaLib.resume();
-                this.startTimer();
+                this.startTimerInterval();
                 this.recording.status = RecordingStatus.RECORDING;
             }
         });
@@ -56,12 +57,12 @@ class FSHelpers {
         this.pauseButton.addEventListener('click', () => {
             if (this.recording.status === RecordingStatus.PAUSED) {
                 mediaLib.resume();
-                this.startTimer();
+                this.startTimerInterval();
                 this.recording.status = RecordingStatus.RECORDING;
             }
             else if (this.recording.status === RecordingStatus.RECORDING) {
                 mediaLib.pause();
-                this.stopTimer();
+                this.stopTimerInterval();
                 this.recording.status = RecordingStatus.PAUSED;
             }
         });
@@ -74,21 +75,27 @@ class FSHelpers {
     }
     tick() {
         this.recording.currentTime += 1;
-        this.timerElem.innerText = this.recording.currentTime;
+        this.updateTimerUI(this.recording.currentTime);
     }
-    startTimer() {
+    startTimerInterval() {
         this.timer = setInterval(() => {
             console.log('tick', this.recording.currentTime);
             this.tick();
         }, 1000);
     }
-    stopTimer() {
+    stopTimerInterval() {
         clearInterval(this.timer);
     }
     resetTimer() {
         this.recording.currentTime = 0;
-        this.timerElem.innerText = 0;
-        this.stopTimer();
+        this.updateTimerUI(0);
+        this.stopTimerInterval();
+    }
+    updateTimerUI(val) {
+        requestAnimationFrame(() => {
+            this.timerDate.setSeconds(val);
+            this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
+        });
     }
 }
 new FSHelpers();

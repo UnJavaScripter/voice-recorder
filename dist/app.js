@@ -10,6 +10,7 @@ class FSHelpers {
     constructor() {
         this.maxBufferSize = 100;
         this.storeEachMillis = 1000;
+        const canvas = document.getElementById('oscilloscope');
         this.recording = {
             status: RecordingStatus.READY,
             currentTime: 0
@@ -26,6 +27,7 @@ class FSHelpers {
             audio: true
         }).then(stream => {
             this.preview.srcObject = stream;
+            this.oscilloscope = new Oscilloscope(stream, canvas);
             return stream;
         });
         this.startButton.addEventListener('click', async () => {

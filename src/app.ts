@@ -21,7 +21,10 @@ class FSHelpers {
   maxBufferSize: number = 100;
   storeEachMillis: number = 1000;
 
+  oscilloscope: any;
+
   constructor() {
+    const canvas: HTMLCanvasElement | null = document.getElementById('oscilloscope') as HTMLCanvasElement;
     this.recording = {
       status: RecordingStatus.READY,
       currentTime: 0
@@ -42,6 +45,7 @@ class FSHelpers {
       audio: true
     }).then(stream => {
       this.preview.srcObject = stream;
+      this.oscilloscope = new Oscilloscope(stream, canvas);
       return stream;
     })
 
@@ -120,7 +124,7 @@ class FSHelpers {
   }
 
   updateTimerUI(val: number) {
-    requestAnimationFrame(() => {
+    requestAnimationFrame(() => { // todo: cancel it!
       this.timerDate.setSeconds(val);
       this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
     })

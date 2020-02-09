@@ -17,6 +17,7 @@ class FSHelpers {
         };
         this.timerDate = new Date(0);
         this.timerElem = document.getElementById('timer');
+        this.fileNameElem = document.getElementById('file-name');
         this.startButton = document.getElementById('start-btn');
         this.stopButton = document.getElementById("stop-btn");
         this.pauseButton = document.getElementById("pause-btn");
@@ -32,7 +33,9 @@ class FSHelpers {
         });
         this.startButton.addEventListener('click', async () => {
             if (this.recording.status === RecordingStatus.READY) {
-                this.start().then(() => {
+                this.start().then((file) => {
+                    this.recording.file = file;
+                    this.renderFileName();
                     this.startTimerInterval();
                     this.recording.status = RecordingStatus.RECORDING;
                 });
@@ -98,6 +101,9 @@ class FSHelpers {
             this.timerDate.setSeconds(val);
             this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
         });
+    }
+    renderFileName() {
+        this.fileNameElem.innerText = "Recording to: " + this.recording.file.name;
     }
 }
 new FSHelpers();

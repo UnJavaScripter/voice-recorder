@@ -21,14 +21,12 @@ main {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-}
-
-.time-counter {
   color: #d4bebe;
 }
 
 canvas.oscilloscope {
   margin-top: 2rem;
+  margin-bottom: 2rem;
   border-radius: 50%;
 }
 

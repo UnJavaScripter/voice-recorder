@@ -13,6 +13,7 @@ class FSHelpers {
   resumeButton: HTMLMediaElement | any;
   preview: HTMLMediaElement | any;
   timerElem: HTMLMediaElement | any;
+  fileNameElem: HTMLMediaElement | any;
   userMedia: any;
   recording: any;
   timer: any;
@@ -32,6 +33,7 @@ class FSHelpers {
     this.timerDate = new Date(0);
     
     this.timerElem = document.getElementById('timer') as HTMLElement;
+    this.fileNameElem = document.getElementById('file-name') as HTMLElement;
     this.startButton = document.getElementById('start-btn') as HTMLElement;
     this.stopButton = document.getElementById("stop-btn") as HTMLElement;
 
@@ -51,7 +53,9 @@ class FSHelpers {
 
     this.startButton.addEventListener('click', async () =>  {
       if (this.recording.status === RecordingStatus.READY) {
-        this.start().then(() => {
+        this.start().then((file) => {
+          this.recording.file = file;
+          this.renderFileName();
           this.startTimerInterval();
           this.recording.status = RecordingStatus.RECORDING;
         });
@@ -128,6 +132,10 @@ class FSHelpers {
       this.timerDate.setSeconds(val);
       this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
     })
+  }
+
+  renderFileName() {
+    this.fileNameElem.innerText = "Recording to: " + this.recording.file.name;
   }
 
 

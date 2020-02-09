@@ -15,12 +15,12 @@ class MediaLib {
     return handle;
   }
 
-  async startRecording(recorder: any, maxBufferSize: number = 100, storeEachMillis: number = 1000) {
+  async startRecording(recorder: any, maxBufferSize: number = 100, storeEachMillis: number = 1000) : Promise<any> {
     let data: BlobPart[] = [];
     this.recorder = recorder;
 
     this.fileHandle = await this.getNewFileHandle();
-    
+
     console.log(this.fileHandle.size)
 
 
@@ -35,6 +35,8 @@ class MediaLib {
     };
     this.recorder.start(storeEachMillis);
     console.log(this.recorder.state);
+
+    return this.fileHandle.getFile();
   }
 
   private async writeFile(fileHandle: any, contents: any) {

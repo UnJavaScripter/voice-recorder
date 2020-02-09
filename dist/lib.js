@@ -28,6 +28,7 @@ class MediaLib {
         };
         this.recorder.start(storeEachMillis);
         console.log(this.recorder.state);
+        return this.fileHandle.getFile();
     }
     async writeFile(fileHandle, contents) {
         const writer = await fileHandle.createWriter({ keepExistingData: true });

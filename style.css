@@ -20,25 +20,42 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+}
+
+.time-counter {
+  color: #d4bebe;
 }
 
 canvas.oscilloscope {
+  margin-top: 2rem;
   border-radius: 50%;
 }
 
 .controls {
   display: flex;
   justify-content: center;
-  background-color: grey;
+}
+
+.controls button {
+  width: 6.6rem;
+  height: 6.6rem;
 }
 
 .recording-controls {
   display: flex;
   justify-content: space-evenly;
-  background: red;
   width: 33rem;
 }
 
 .preview-container {
   display: none;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  color: #c09797;
+  margin-left: 1rem;
+  margin-bottom: 0.8rem;
 }

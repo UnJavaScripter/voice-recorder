@@ -16,12 +16,10 @@ class FSHelpers {
   fileNameElem: HTMLMediaElement | any;
   userMedia: any;
   recording: any;
-  timer: any;
   timerDate: Date;
-
   maxBufferSize: number = 100;
   storeEachMillis: number = 1000;
-
+  timerRaf: number = 0;
   oscilloscope: any;
 
   constructor() {
@@ -31,7 +29,7 @@ class FSHelpers {
       currentTime: 0
     }
     this.timerDate = new Date(0);
-    
+
     this.timerElem = document.getElementById('timer') as HTMLElement;
     this.fileNameElem = document.getElementById('file-name') as HTMLElement;
     this.recordButton = document.getElementById('start-btn') as HTMLButtonElement;
@@ -55,7 +53,7 @@ class FSHelpers {
       return stream;
     })
 
-    this.recordButton.addEventListener('click', async () =>  {
+    this.recordButton.addEventListener('click', async () => {
       if (this.recording.status === RecordingStatus.READY) {
         this.startRecording().then((file) => {
           this.recording.file = file;
@@ -66,12 +64,12 @@ class FSHelpers {
         }, (err: Error) => {
           console.log(err)
         });
-      } else if(this.recording.status === RecordingStatus.PAUSED) {
+      } else if (this.recording.status === RecordingStatus.PAUSED) {
         mediaLib.resume();
         this.startTimerInterval();
         this.recording.status = RecordingStatus.RECORDING;
         this.setUIState(RecordingStatus.RECORDING);
-      } else if(this.recording.status === RecordingStatus.RECORDING) {
+      } else if (this.recording.status === RecordingStatus.RECORDING) {
         mediaLib.pause();
         this.stopTimerInterval();
         this.recording.status = RecordingStatus.PAUSED;
@@ -80,38 +78,35 @@ class FSHelpers {
     });
 
     this.stopButton.addEventListener('click', () => {
-      if (this.recording.status === RecordingStatus.RECORDING) {
-        mediaLib.stop();
-        this.resetTimer();
-        this.recording.status = RecordingStatus.READY;
-      } else if (this.recording.status === RecordingStatus.PAUSED) {
+      if (this.recording.status === RecordingStatus.PAUSED) {
         mediaLib.resume();
-        mediaLib.stop();
-        this.resetTimer();
-        this.recording.status = RecordingStatus.READY;
       }
+      mediaLib.stop();
+      this.resetTimer();
+      this.recording.status = RecordingStatus.READY;
+      this.setUIState(RecordingStatus.READY);
     });
 
   }
 
   private setUIState(recordingStatus: RecordingStatus) {
     const setButtonIcon = (element: HTMLElement, iconName: string): void => {
-      if(element.firstElementChild) {
+      if (element.firstElementChild) {
         element.firstElementChild.innerHTML = iconName;
       }
     }
-    switch(recordingStatus) {
-      case(RecordingStatus.READY): {
+    switch (recordingStatus) {
+      case (RecordingStatus.READY): {
         this.stopButton.setAttribute('disabled', 'disabled');
         setButtonIcon(this.recordButton, 'fiber_manual_record');
         break;
       }
-      case(RecordingStatus.RECORDING): {
+      case (RecordingStatus.RECORDING): {
         this.stopButton.removeAttribute('disabled');
         setButtonIcon(this.recordButton, 'pause');
         break;
       }
-      case(RecordingStatus.PAUSED): {
+      case (RecordingStatus.PAUSED): {
         this.stopButton.removeAttribute('disabled');
         setButtonIcon(this.recordButton, 'fiber_manual_record');
         break;
@@ -129,39 +124,32 @@ class FSHelpers {
       this.maxBufferSize,
       this.storeEachMillis
     );
-    
+
   }
 
-  tick() {
+  startTimerInterval(): void {
     this.recording.currentTime += 1;
-    this.updateTimerUI(this.recording.currentTime);
+    this.timerDate = new Date(1000 * this.recording.currentTime);
+    const dateString = this.timerDate.toISOString();
+    this.updateTimerUI(dateString.substring(11, 19));
+    this.timerRaf = window.requestAnimationFrame(this.startTimerInterval.bind(this));
   }
 
-  startTimerInterval() {
-    this.timer = setInterval(() => {
-      console.log('tick', this.recording.currentTime)
-      this.tick();
-    }, 1000);
+  stopTimerInterval(): void {
+    window.cancelAnimationFrame(this.timerRaf);
   }
 
-  stopTimerInterval() {
-    clearInterval(this.timer);
-  }
-
-  resetTimer() {
+  resetTimer(): void {
     this.recording.currentTime = 0;
-    this.updateTimerUI(0);
+    this.updateTimerUI('00:00:00');
     this.stopTimerInterval();
   }
 
-  updateTimerUI(val: number) {
-    requestAnimationFrame(() => { // todo: cancel it!
-      this.timerDate.setSeconds(val);
-      this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
-    });
+  updateTimerUI(val: string): void {
+    this.timerElem.innerText = val;
   }
 
-  renderFileName() {
+  renderFileName(): void {
     this.fileNameElem.innerText = "Recording to: " + this.recording.file.name;
   }
 

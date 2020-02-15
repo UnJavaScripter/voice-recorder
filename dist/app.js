@@ -10,6 +10,7 @@ class FSHelpers {
     constructor() {
         this.maxBufferSize = 100;
         this.storeEachMillis = 1000;
+        this.timerRaf = 0;
         const canvas = document.getElementById('oscilloscope');
         this.recording = {
             status: RecordingStatus.READY,
@@ -60,17 +61,13 @@ class FSHelpers {
             }
         });
         this.stopButton.addEventListener('click', () => {
-            if (this.recording.status === RecordingStatus.RECORDING) {
-                mediaLib.stop();
-                this.resetTimer();
-                this.recording.status = RecordingStatus.READY;
-            }
-            else if (this.recording.status === RecordingStatus.PAUSED) {
+            if (this.recording.status === RecordingStatus.PAUSED) {
                 mediaLib.resume();
-                mediaLib.stop();
-                this.resetTimer();
-                this.recording.status = RecordingStatus.READY;
             }
+            mediaLib.stop();
+            this.resetTimer();
+            this.recording.status = RecordingStatus.READY;
+            this.setUIState(RecordingStatus.READY);
         });
     }
     setUIState(recordingStatus) {
@@ -103,29 +100,23 @@ class FSHelpers {
         this.preview.captureStream(recorder);
         return await mediaLib.startRecording(recorder, this.maxBufferSize, this.storeEachMillis);
     }
-    tick() {
-        this.recording.currentTime += 1;
-        this.updateTimerUI(this.recording.currentTime);
-    }
     startTimerInterval() {
-        this.timer = setInterval(() => {
-            console.log('tick', this.recording.currentTime);
-            this.tick();
-        }, 1000);
+        this.recording.currentTime += 1;
+        this.timerDate = new Date(1000 * this.recording.currentTime);
+        const dateString = this.timerDate.toISOString();
+        this.updateTimerUI(dateString.substring(11, 19));
+        this.timerRaf = window.requestAnimationFrame(this.startTimerInterval.bind(this));
     }
     stopTimerInterval() {
-        clearInterval(this.timer);
+        window.cancelAnimationFrame(this.timerRaf);
     }
     resetTimer() {
         this.recording.currentTime = 0;
-        this.updateTimerUI(0);
+        this.updateTimerUI('00:00:00');
         this.stopTimerInterval();
     }
     updateTimerUI(val) {
-        requestAnimationFrame(() => {
-            this.timerDate.setSeconds(val);
-            this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
-        });
+        this.timerElem.innerText = val;
     }
     renderFileName() {
         this.fileNameElem.innerText = "Recording to: " + this.recording.file.name;

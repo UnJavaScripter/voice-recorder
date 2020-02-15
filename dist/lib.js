@@ -19,12 +19,12 @@ class MediaLib {
             this.fileHandle = await this.getNewFileHandle();
         }
         catch (err) {
-            console.log('err', err);
+            // console.log('err', err)
             return Promise.reject(err);
         }
-        console.log(this.fileHandle.size);
+        // console.log(this.fileHandle.size)
         this.recorder.ondataavailable = (event) => {
-            console.log('ondataavailable', event.data);
+            // console.log('ondataavailable', event.data)
             if (data.length >= maxBufferSize) {
                 data.length = 0;
             }
@@ -33,14 +33,14 @@ class MediaLib {
             this.writeFile(this.fileHandle, recordedBlob);
         };
         this.recorder.start(storeEachMillis);
-        console.log(this.recorder.state);
+        // console.log(this.recorder.state);
         return this.fileHandle.getFile();
     }
     async writeFile(fileHandle, contents) {
         const writer = await fileHandle.createWriter({ keepExistingData: true });
-        console.log(contents);
+        // console.log(contents)
         await writer.write(0, contents);
-        console.log('will write', contents);
+        // console.log('will write', contents)
         await writer.close();
         let stopped = new Promise((resolve, reject) => {
             this.recorder.onstop = resolve;
@@ -50,8 +50,8 @@ class MediaLib {
             stopped,
         ])
             .then(() => {
-            console.log('%c==============================================', 'color: darkslategray; background-color: yellow');
-            console.log('recorded!!', contents);
+            // console.log('%c==============================================', 'color: darkslategray; background-color: yellow')
+            // console.log('recorded!!', contents)
             return contents;
         });
     }

@@ -20,7 +20,6 @@ class FSHelpers {
         this.fileNameElem = document.getElementById('file-name');
         this.recordButton = document.getElementById('start-btn');
         this.stopButton = document.getElementById("stop-btn");
-        // // this.pauseButton = document.getElementById("pause-btn") as HTMLButtonElement;
         this.resumeButton = document.getElementById("resume-btn");
         this.preview = document.getElementById("preview");
         this.init(canvas);
@@ -82,19 +81,16 @@ class FSHelpers {
         };
         switch (recordingStatus) {
             case (RecordingStatus.READY): {
-                // this.pauseButton.setAttribute('disabled', 'disabled');
                 this.stopButton.setAttribute('disabled', 'disabled');
                 setButtonIcon(this.recordButton, 'fiber_manual_record');
                 break;
             }
             case (RecordingStatus.RECORDING): {
-                // this.pauseButton.removeAttribute('disabled');
                 this.stopButton.removeAttribute('disabled');
                 setButtonIcon(this.recordButton, 'pause');
                 break;
             }
             case (RecordingStatus.PAUSED): {
-                // this.pauseButton.removeAttribute('disabled');
                 this.stopButton.removeAttribute('disabled');
                 setButtonIcon(this.recordButton, 'fiber_manual_record');
                 break;

@@ -7,7 +7,7 @@ enum RecordingStatus {
 }
 
 class FSHelpers {
-  startButton: HTMLElement;
+  recordButton: HTMLElement;
   stopButton: HTMLElement;
   pauseButton: HTMLMediaElement | any;
   resumeButton: HTMLMediaElement | any;
@@ -34,14 +34,19 @@ class FSHelpers {
     
     this.timerElem = document.getElementById('timer') as HTMLElement;
     this.fileNameElem = document.getElementById('file-name') as HTMLElement;
-    this.startButton = document.getElementById('start-btn') as HTMLElement;
-    this.stopButton = document.getElementById("stop-btn") as HTMLElement;
+    this.recordButton = document.getElementById('start-btn') as HTMLButtonElement;
+    this.stopButton = document.getElementById("stop-btn") as HTMLButtonElement;
 
-    this.pauseButton = document.getElementById("pause-btn") as HTMLMediaElement;
-    this.resumeButton = document.getElementById("resume-btn") as HTMLMediaElement;
+    // // this.pauseButton = document.getElementById("pause-btn") as HTMLButtonElement;
+    this.resumeButton = document.getElementById("resume-btn") as HTMLButtonElement;
 
     this.preview = document.getElementById("preview") as HTMLMediaElement;
 
+    this.init(canvas);
+  }
+
+  init(canvas: HTMLCanvasElement) {
+    this.setUIState(RecordingStatus.READY);
     this.userMedia = navigator.mediaDevices.getUserMedia({
       video: true,
       audio: true
@@ -51,18 +56,27 @@ class FSHelpers {
       return stream;
     })
 
-    this.startButton.addEventListener('click', async () =>  {
+    this.recordButton.addEventListener('click', async () =>  {
       if (this.recording.status === RecordingStatus.READY) {
-        this.start().then((file) => {
+        this.startRecording().then((file) => {
           this.recording.file = file;
           this.renderFileName();
           this.startTimerInterval();
           this.recording.status = RecordingStatus.RECORDING;
+          this.setUIState(RecordingStatus.RECORDING);
+        }, (err: Error) => {
+          console.log(err)
         });
       } else if(this.recording.status === RecordingStatus.PAUSED) {
         mediaLib.resume();
         this.startTimerInterval();
         this.recording.status = RecordingStatus.RECORDING;
+        this.setUIState(RecordingStatus.RECORDING);
+      } else if(this.recording.status === RecordingStatus.RECORDING) {
+        mediaLib.pause();
+        this.stopTimerInterval();
+        this.recording.status = RecordingStatus.PAUSED;
+        this.setUIState(RecordingStatus.PAUSED);
       }
     });
 
@@ -79,29 +93,46 @@ class FSHelpers {
       }
     });
 
-    this.pauseButton.addEventListener('click', () => {
-      if (this.recording.status === RecordingStatus.PAUSED) {
-        mediaLib.resume();
-        this.startTimerInterval();
-        this.recording.status = RecordingStatus.RECORDING;
-      } else if(this.recording.status === RecordingStatus.RECORDING) {
-        mediaLib.pause();
-        this.stopTimerInterval();
-        this.recording.status = RecordingStatus.PAUSED;
-      }
-    });
-   
   }
 
-  private async start() {
+  private setUIState(recordingStatus: RecordingStatus) {
+    const setButtonIcon = (element: HTMLElement, iconName: string): void => {
+      if(element.firstElementChild) {
+        element.firstElementChild.innerHTML = iconName;
+      }
+    }
+    switch(recordingStatus) {
+      case(RecordingStatus.READY): {
+        // this.pauseButton.setAttribute('disabled', 'disabled');
+        this.stopButton.setAttribute('disabled', 'disabled');
+        setButtonIcon(this.recordButton, 'fiber_manual_record');
+        break;
+      }
+      case(RecordingStatus.RECORDING): {
+        // this.pauseButton.removeAttribute('disabled');
+        this.stopButton.removeAttribute('disabled');
+        setButtonIcon(this.recordButton, 'pause');
+        break;
+      }
+      case(RecordingStatus.PAUSED): {
+        // this.pauseButton.removeAttribute('disabled');
+        this.stopButton.removeAttribute('disabled');
+        setButtonIcon(this.recordButton, 'fiber_manual_record');
+        break;
+      }
+    }
+  }
+
+  private async startRecording() {
     const streamSource = await this.userMedia;
     const recorder = new MediaRecorder(streamSource);
     this.preview.captureStream(recorder);
+
     return await mediaLib.startRecording(
       recorder,
       this.maxBufferSize,
       this.storeEachMillis
-    )
+    );
     
   }
 
@@ -131,7 +162,7 @@ class FSHelpers {
     requestAnimationFrame(() => { // todo: cancel it!
       this.timerDate.setSeconds(val);
       this.timerElem.innerText = new Date(1000 * val).toISOString().substr(11, 8);
-    })
+    });
   }
 
   renderFileName() {

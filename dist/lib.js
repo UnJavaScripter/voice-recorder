@@ -15,7 +15,13 @@ class MediaLib {
     async startRecording(recorder, maxBufferSize = 100, storeEachMillis = 1000) {
         let data = [];
         this.recorder = recorder;
-        this.fileHandle = await this.getNewFileHandle();
+        try {
+            this.fileHandle = await this.getNewFileHandle();
+        }
+        catch (err) {
+            console.log('err', err);
+            return Promise.reject(err);
+        }
         console.log(this.fileHandle.size);
         this.recorder.ondataavailable = (event) => {
             console.log('ondataavailable', event.data);

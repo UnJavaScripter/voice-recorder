@@ -12,14 +12,20 @@ class MediaLib {
       }],
     };
     const handle = (window as any).chooseFileSystemEntries(opts);
+    
     return handle;
   }
 
   async startRecording(recorder: any, maxBufferSize: number = 100, storeEachMillis: number = 1000) : Promise<any> {
     let data: BlobPart[] = [];
     this.recorder = recorder;
-
-    this.fileHandle = await this.getNewFileHandle();
+    
+    try {
+      this.fileHandle = await this.getNewFileHandle();
+    }catch(err) {
+      console.log('err', err)
+      return Promise.reject(err);
+    }
 
     console.log(this.fileHandle.size)
 

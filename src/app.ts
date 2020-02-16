@@ -13,22 +13,26 @@ class FSHelpers {
   resumeButton: HTMLMediaElement | any;
   preview: HTMLMediaElement | any;
   timerElem: HTMLMediaElement | any;
+  timerElem2: HTMLMediaElement | any;
   fileNameElem: HTMLMediaElement | any;
   userMedia: any;
   recording: any;
-  timerDate: Date;
+  timerStartDate: Date | undefined;
+  timerCurrentDate: Date | undefined;
   maxBufferSize: number = 100;
   storeEachMillis: number = 1000;
   timerRaf: number = 0;
   oscilloscope: any;
 
+  initialTimeDiff: number = 0;
+
   constructor() {
     const canvas: HTMLCanvasElement | null = document.getElementById('oscilloscope') as HTMLCanvasElement;
     this.recording = {
-      status: RecordingStatus.READY,
-      currentTime: 0
+      status: RecordingStatus.READY
     }
-    this.timerDate = new Date(0);
+
+    this.timerElem2 = document.getElementById('timer2') as HTMLElement;
 
     this.timerElem = document.getElementById('timer') as HTMLElement;
     this.fileNameElem = document.getElementById('file-name') as HTMLElement;
@@ -126,12 +130,16 @@ class FSHelpers {
     );
 
   }
-
   startTimerInterval(): void {
-    this.recording.currentTime += 1;
-    this.timerDate = new Date(1000 * this.recording.currentTime);
-    const dateString = this.timerDate.toISOString();
-    this.updateTimerUI(dateString.substring(11, 19));
+    this.timerCurrentDate = new Date();
+    if(!this.timerStartDate) {
+      this.timerStartDate = new Date();
+    }
+    if(this.timerCurrentDate && this.timerStartDate) {
+      const timeDelta = new Date(this.timerCurrentDate.getTime() - this.timerStartDate.getTime())
+      const dateString = timeDelta.toISOString();
+      this.updateTimerUI(dateString.substring(11, 19));
+    }
     this.timerRaf = window.requestAnimationFrame(this.startTimerInterval.bind(this));
   }
 
@@ -140,12 +148,11 @@ class FSHelpers {
   }
 
   resetTimer(): void {
-    this.recording.currentTime = 0;
     this.updateTimerUI('00:00:00');
     this.stopTimerInterval();
   }
 
-  updateTimerUI(val: string): void {
+  updateTimerUI(val: any): void {
     this.timerElem.innerText = val;
   }
 

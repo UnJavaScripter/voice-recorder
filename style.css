@@ -1,11 +1,11 @@
 body {
-  background-color: #923535;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
-  
+  background-color: #b71c1c;
+  font-family: 'Roboto', Helvetica, sans-serif;
 }
 
 main {
@@ -21,13 +21,14 @@ main {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  color: #d4bebe;
+  color: #f1d5d5;
 }
 
 canvas.oscilloscope {
   margin-top: 2rem;
   margin-bottom: 2rem;
   border-radius: 50%;
+  background-color: #5d1a0f;
 }
 
 .controls {
@@ -53,7 +54,8 @@ canvas.oscilloscope {
 footer {
   position: fixed;
   bottom: 0;
-  color: #c09797;
-  margin-left: 1rem;
-  margin-bottom: 0.8rem;
+  color: #d1c9c9;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 100%;
 }

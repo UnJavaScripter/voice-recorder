@@ -11,12 +11,12 @@ class FSHelpers {
         this.maxBufferSize = 100;
         this.storeEachMillis = 1000;
         this.timerRaf = 0;
+        this.initialTimeDiff = 0;
         const canvas = document.getElementById('oscilloscope');
         this.recording = {
-            status: RecordingStatus.READY,
-            currentTime: 0
+            status: RecordingStatus.READY
         };
-        this.timerDate = new Date(0);
+        this.timerElem2 = document.getElementById('timer2');
         this.timerElem = document.getElementById('timer');
         this.fileNameElem = document.getElementById('file-name');
         this.recordButton = document.getElementById('start-btn');
@@ -101,17 +101,21 @@ class FSHelpers {
         return await mediaLib.startRecording(recorder, this.maxBufferSize, this.storeEachMillis);
     }
     startTimerInterval() {
-        this.recording.currentTime += 1;
-        this.timerDate = new Date(1000 * this.recording.currentTime);
-        const dateString = this.timerDate.toISOString();
-        this.updateTimerUI(dateString.substring(11, 19));
+        this.timerCurrentDate = new Date();
+        if (!this.timerStartDate) {
+            this.timerStartDate = new Date();
+        }
+        if (this.timerCurrentDate && this.timerStartDate) {
+            const timeDelta = new Date(this.timerCurrentDate.getTime() - this.timerStartDate.getTime());
+            const dateString = timeDelta.toISOString();
+            this.updateTimerUI(dateString.substring(11, 19));
+        }
         this.timerRaf = window.requestAnimationFrame(this.startTimerInterval.bind(this));
     }
     stopTimerInterval() {
         window.cancelAnimationFrame(this.timerRaf);
     }
     resetTimer() {
-        this.recording.currentTime = 0;
         this.updateTimerUI('00:00:00');
         this.stopTimerInterval();
     }

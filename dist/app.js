@@ -116,6 +116,7 @@ class FSHelpers {
         window.cancelAnimationFrame(this.timerRaf);
     }
     resetTimer() {
+        this.timerStartDate = undefined;
         this.updateTimerUI('00:00:00');
         this.stopTimerInterval();
     }

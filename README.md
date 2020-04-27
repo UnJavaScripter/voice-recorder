@@ -4,4 +4,4 @@ A sample web app that uses the native filesystem API to continuously record audi
 
 ## Demo
 
-Here: https://unjavascripter-voice-recoder.glitch.me/
+Here: https://unjavascripter.github.io/voice-recoder/

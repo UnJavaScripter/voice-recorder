@@ -2,7 +2,7 @@
 class MediaLib {
     getNewFileHandle() {
         const opts = {
-            type: 'saveFile',
+            type: 'save-file',
             accepts: [{
                     description: 'Video file',
                     extensions: ['mp4'],

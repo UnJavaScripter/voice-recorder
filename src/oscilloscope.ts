@@ -15,13 +15,13 @@ class Oscilloscope {
     const source = audioCtx.createMediaStreamSource(stream);
     this.analyser = audioCtx.createAnalyser();
     this.analyser.fftSize = 2048;
+
     this.width = this.canvasElem.width;
     this.height = this.canvasElem.height;
+
     this.bufferLength = this.analyser.frequencyBinCount;
     this.dataArray = new Uint8Array(this.bufferLength);
     source.connect(this.analyser);
-    // analyser.connect(distortion);
-    // distortion.connect(audioCtx.destination);
     this.start()
   }
 
@@ -32,8 +32,6 @@ class Oscilloscope {
     canvasCtx.clearRect(0, 0, this.width, this.height);
 
 
-    // canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-    // canvasCtx.fillRect(0, 0, this.width, this.height);
     canvasCtx.lineWidth = 2;
     canvasCtx.strokeStyle = '#d99c9cde';
     canvasCtx.beginPath();
@@ -52,7 +50,7 @@ class Oscilloscope {
 
       x += sliceWidth;
     }
-    canvasCtx.lineTo(this.canvasElem.width, this.canvasElem.height / 2);
+    canvasCtx.lineTo(this.width, this.height / 2);
     canvasCtx.stroke();
     this.drawContainer(canvasCtx);
 

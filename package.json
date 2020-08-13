@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/UnJavaScripter/voice-recoder#readme",
   "devDependencies": {
-    "@types/dom-mediacapture-record": "^1.0.3"
+    "@types/dom-mediacapture-record": "^1.0.7"
   }
 }

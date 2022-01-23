@@ -1,4 +1,5 @@
 "use strict";
+// Based on https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createAnalyser
 class Oscilloscope {
     constructor(stream, canvasElem) {
         this.canvasElem = canvasElem;

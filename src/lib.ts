@@ -6,12 +6,12 @@ class MediaLib {
     const opts = {
       type: 'save-file',
       accepts: [{
-        description: 'Video file',
+        description: 'Audio file',
         extensions: ['mp4'],
-        mimeTypes: ['video/mp4'],
+        mimeTypes: ['audio/mp4'],
       }],
     };
-    const handle = (window as any).chooseFileSystemEntries(opts);
+    const handle = (window as any).showSaveFilePicker(opts);
     
     return handle;
   }
@@ -36,7 +36,7 @@ class MediaLib {
         data.length = 0;
       }
       data.push(event.data)
-      const recordedBlob = new Blob(data, { type: "video/webm" });
+      const recordedBlob = new Blob(data, { type: "audio/webm" });
       this.writeFile(this.fileHandle, recordedBlob)
     };
     this.recorder.start(storeEachMillis);
@@ -46,12 +46,12 @@ class MediaLib {
   }
 
   private async writeFile(fileHandle: any, contents: any) {
-    const writer = await fileHandle.createWriter({ keepExistingData: true });
+    const writable = await fileHandle.createWritable({ keepExistingData: true });
     // console.log(contents)
-    await writer.write(0, contents);
+    await writable.write(contents);
     // console.log('will write', contents)
 
-    await writer.close();
+    await writable.close();
 
     let stopped = new Promise((resolve, reject) => {
       this.recorder.onstop = resolve;

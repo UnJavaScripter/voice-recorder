@@ -1,11 +1,17 @@
+:root {
+  --color-background: #EFEFEF;
+  --color-osc: #5d1a0f;
+  --color-text-3: #d1c9c9;
+}
+
 body {
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #EFEFEF;
-  font-family: 'Roboto', Helvetica, sans-serif;
+  background-color: var(--color-background);
+  font-family: system-ui;
 }
 
 header {
@@ -37,7 +43,8 @@ main {
 
 canvas.oscilloscope {
   border-radius: 50%;
-  background-color: #5d1a0f;
+  background-color: var(--color-osc);
+  margin: 2rem 0;
 }
 
 .time-counter {
@@ -65,7 +72,7 @@ canvas.oscilloscope {
 }
 
 footer {
-  color: #d1c9c9;
+  color: var(--color-text-3);
   text-align: center;
   position: absolute;
   bottom: 0;

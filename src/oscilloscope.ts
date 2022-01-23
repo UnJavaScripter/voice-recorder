@@ -1,3 +1,5 @@
+// Based on https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createAnalyser
+
 class Oscilloscope {
   canvasElem: HTMLCanvasElement;
   canvasCtx: CanvasRenderingContext2D | null;

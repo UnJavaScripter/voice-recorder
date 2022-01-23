@@ -28,14 +28,14 @@ class FSHelpers {
     init(canvas) {
         this.setUIState(RecordingStatus.READY);
         this.userMedia = navigator.mediaDevices.getUserMedia({
-            video: true,
+            video: false,
             audio: true
         }).then(stream => {
             this.preview.srcObject = stream;
             this.oscilloscope = new Oscilloscope(stream, canvas);
             return stream;
         });
-        this.recordButton.addEventListener('click', async () => {
+        this.recordButton.addEventListener('pointerdown', async () => {
             if (this.recording.status === RecordingStatus.READY) {
                 this.startRecording().then((file) => {
                     this.recording.file = file;

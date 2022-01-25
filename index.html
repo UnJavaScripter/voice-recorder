@@ -40,8 +40,8 @@
       <div class="page-content">
         <section class="indicators">
           <div id="file-name" class="file-name mdl-typography--display-1"></div>
-          <div>
-            <canvas id="oscilloscope" class="oscilloscope" width="350rem" height="350rem"></canvas>
+          <div class="osc-container">
+            <dc-oscilloscope id="osc"></dc-oscilloscope>
           </div>
           <div class="time-counter">
             <span id="timer" class="mdl-typography--display-2"></span>
@@ -73,6 +73,7 @@
   </div>
 
 
+  <script src="https://unjavascripter.github.io/dc-elements/dc-elements/oscilloscope/oscilloscope.js"></script>
   <script src="dist/lib.js"></script>
   <script src="dist/app.js"></script>
   <script src="dist/oscilloscope.js"></script>

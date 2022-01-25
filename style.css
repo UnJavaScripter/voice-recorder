@@ -41,10 +41,13 @@ main {
   height: 34px;
 }
 
-canvas.oscilloscope {
+.osc-container {
+  width: 30vw;
+  height: 30vw;
+  background: var(--color-osc);
   border-radius: 50%;
-  background-color: var(--color-osc);
   margin: 2rem 0;
+  box-shadow: 0 0 13px 2px #544141;
 }
 
 .time-counter {

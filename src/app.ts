@@ -15,7 +15,7 @@ class FSHelpers {
   timerElem: HTMLMediaElement | any;
   timerElem2: HTMLMediaElement | any;
   fileNameElem: HTMLMediaElement | any;
-  userMedia: any;
+  mediaStream: MediaStream;
   recording: any;
   timerStartDate: Date | undefined;
   timerCurrentDate: Date | undefined;
@@ -23,11 +23,12 @@ class FSHelpers {
   storeEachMillis: number = 1000;
   timerRaf: number = 0;
   oscilloscope: any;
+  oscElem: any;
 
   initialTimeDiff: number = 0;
 
   constructor() {
-    const canvas: HTMLCanvasElement | null = document.getElementById('oscilloscope') as HTMLCanvasElement;
+    this.oscElem = document.getElementById('osc');
     this.recording = {
       status: RecordingStatus.READY
     }
@@ -43,19 +44,19 @@ class FSHelpers {
 
     this.preview = document.getElementById("preview") as HTMLMediaElement;
 
-    this.init(canvas);
+    this.init();
   }
 
-  init(canvas: HTMLCanvasElement) {
+  async init() {
     this.setUIState(RecordingStatus.READY);
-    this.userMedia = navigator.mediaDevices.getUserMedia({
+    this.mediaStream = await navigator.mediaDevices.getUserMedia({
       video: false,
       audio: true
-    }).then(stream => {
-      this.preview.srcObject = stream;
-      this.oscilloscope = new Oscilloscope(stream, canvas);
-      return stream;
     })
+    
+    this.preview.srcObject = this.mediaStream;
+    this.oscElem.setStream(this.mediaStream);
+    this.oscElem.start();
 
     this.recordButton.addEventListener('pointerdown', async () => {
       if (this.recording.status === RecordingStatus.READY) {
@@ -119,7 +120,7 @@ class FSHelpers {
   }
 
   private async startRecording() {
-    const streamSource = await this.userMedia;
+    const streamSource = await this.mediaStream;
     const recorder = new MediaRecorder(streamSource);
     this.preview.captureStream(recorder);
 

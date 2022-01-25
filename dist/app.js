@@ -12,7 +12,7 @@ class FSHelpers {
         this.storeEachMillis = 1000;
         this.timerRaf = 0;
         this.initialTimeDiff = 0;
-        const canvas = document.getElementById('oscilloscope');
+        this.oscElem = document.getElementById('osc');
         this.recording = {
             status: RecordingStatus.READY
         };
@@ -23,18 +23,17 @@ class FSHelpers {
         this.stopButton = document.getElementById("stop-btn");
         this.resumeButton = document.getElementById("resume-btn");
         this.preview = document.getElementById("preview");
-        this.init(canvas);
+        this.init();
     }
-    init(canvas) {
+    async init() {
         this.setUIState(RecordingStatus.READY);
-        this.userMedia = navigator.mediaDevices.getUserMedia({
+        this.mediaStream = await navigator.mediaDevices.getUserMedia({
             video: false,
             audio: true
-        }).then(stream => {
-            this.preview.srcObject = stream;
-            this.oscilloscope = new Oscilloscope(stream, canvas);
-            return stream;
         });
+        this.preview.srcObject = this.mediaStream;
+        this.oscElem.setStream(this.mediaStream);
+        this.oscElem.start();
         this.recordButton.addEventListener('pointerdown', async () => {
             if (this.recording.status === RecordingStatus.READY) {
                 this.startRecording().then((file) => {
@@ -95,7 +94,7 @@ class FSHelpers {
         }
     }
     async startRecording() {
-        const streamSource = await this.userMedia;
+        const streamSource = await this.mediaStream;
         const recorder = new MediaRecorder(streamSource);
         this.preview.captureStream(recorder);
         return await mediaLib.startRecording(recorder, this.maxBufferSize, this.storeEachMillis);
